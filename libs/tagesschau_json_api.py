@@ -142,13 +142,13 @@ class LazyVideoContent(VideoContent):
     def _fetch_details(self):
         """Fetches videourls from detailsurl."""
         self._logger.info("fetching details from " + self.detailsurl)
+
         try:
             handle = urllib.request.urlopen(self.detailsurl)
         except urllib.error.HTTPError as e:
-            # check if we need to switch to https.
-            if self.detailsurl.startswith("http:"):
-                self._logger.info("failed. try with https instead")
-                handle = urllib.request.urlopen("https:" + self.detailsurl[5:])
+            if (e.code >= 300 and e.code < 400):                            # redirect error: 
+                self._logger.info("failed. try with redirecttion instead")
+                handle = urllib.request.urlopen(e.headers['Location'])
             else:
                 # whatever. Let somebody else handle that (in fact nobody will - kodi will just show an error)
                 raise e
