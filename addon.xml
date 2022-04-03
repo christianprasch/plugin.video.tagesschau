@@ -12,8 +12,7 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <language>de_DE</language>
-    <language>en_GB</language>
+    <language>en de</language>
     <platform>all</platform>
     <license>GPL-3.0-only</license>
     <website>https://github.com/christianprasch/plugin.video.tagesschau</website>
