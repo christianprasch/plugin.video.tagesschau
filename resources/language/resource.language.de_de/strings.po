@@ -22,16 +22,16 @@ msgstr "Bevorzugte Qualität"
 
 msgctxt "#30100"
 msgid "Latest Videos"
-msgstr "Aktuelle Videos"
+msgstr "Nachrichten"
 
 msgctxt "#30101"
 msgid "Latest Broadcasts"
-msgstr "Aktuelle Sendungen"
+msgstr "Sendungen"
 
 msgctxt "#30102"
-msgid "Dossiers"
-msgstr "Dossiers"
+msgid "Livestreams"
+msgstr "Livestreams"
 
 msgctxt "#30103"
-msgid "Archived Broadcasts"
-msgstr "Sendungsarchiv"
+msgid "ago"
+msgstr "Vor"

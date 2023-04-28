@@ -22,16 +22,16 @@ msgstr ""
 
 msgctxt "#30100"
 msgid "Latest Videos"
-msgstr ""
+msgstr "News"
 
 msgctxt "#30101"
 msgid "Latest Broadcasts"
-msgstr ""
+msgstr "Broadcasts"
 
 msgctxt "#30102"
-msgid "Dossiers"
-msgstr ""
+msgid "Livestreams"
+msgstr "Livestreams"
 
 msgctxt "#30103"
-msgid "Archived Broadcasts"
-msgstr ""
+msgid "ago"
+msgstr "ago"
