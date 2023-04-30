@@ -20,17 +20,21 @@ msgctxt "#30001"
 msgid "Preferred Quality"
 msgstr "Bevorzugte Qualität"
 
+msgctxt "#30002"
+msgid "Show age of news in title"
+msgstr "Zeige Alter der Nachricht im Titel"
+
 msgctxt "#30100"
-msgid "Latest Videos"
+msgid "News"
 msgstr "Nachrichten"
 
 msgctxt "#30101"
-msgid "Latest Broadcasts"
+msgid "Broadcasts"
 msgstr "Sendungen"
 
 msgctxt "#30102"
-msgid "Livestreams"
-msgstr "Livestreams"
+msgid "Livestream"
+msgstr "Livestream"
 
 msgctxt "#30103"
 msgid "ago"

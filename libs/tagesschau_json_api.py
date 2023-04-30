@@ -24,12 +24,11 @@ import logging, datetime, re, urllib.request, xbmc, xbmcaddon
 # -- Constants ----------------------------------------------
 ADDON_ID = 'plugin.video.tagesschau'
 
-
-
 logger = logging.getLogger("plugin.video.tagesschau.api")
 base_url = "https://www.tagesschau.de/api2u/"
 
 addon = xbmcaddon.Addon(id=ADDON_ID)
+showage = addon.getSettingBool('ShowAge')
 
 class VideoContent(object):
     """Represents a single video or broadcast.
@@ -82,10 +81,10 @@ class VideoContent(object):
         
         if quality == 'X':
             videourl = self._videourls.get("h264xl")
-        if quality == 'L':
-            videourl = self._videourls.get("h264xl")
-        if quality == 'M' or not videourl:
+        if quality == 'L' or not videourl:
             videourl = self._videourls.get("h264m")
+        if quality == 'M' or not videourl:
+            videourl = self._videourls.get("h264s")
         if quality == 'S' or not videourl:
             videourl = self._videourls.get("h264s")
 
@@ -118,7 +117,6 @@ class VideoContentParser(object):
     def parse_video(self, jsonvideo):
         """Parses the video JSON into a VideoContent object."""
         tsid = jsonvideo["sophoraId"]
-        title = jsonvideo["title"]
         timestamp = self._parse_date(jsonvideo["date"])
         imageurls = {}
         imageurls = self._parse_image_urls(jsonvideo["teaserImage"]["imageVariants"])
@@ -133,9 +131,16 @@ class VideoContentParser(object):
         
         agostr = addon.getLocalizedString(30103)
         if agostr == "ago":
-            description = agestr + " " + agostr + "\n" + title    
+            agostr = agestr + " " + agostr
         else:
-            description = agostr + " " + agestr + "\n" + title    
+            agostr = agostr + " " + agestr
+
+        if showage:
+            title = agostr + ": " + jsonvideo["title"]    
+        else:
+            title = jsonvideo["title"]    
+        
+        description = agostr + "\n" + jsonvideo["title"]    
             
         return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
 
