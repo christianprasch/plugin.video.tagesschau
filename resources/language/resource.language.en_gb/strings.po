@@ -39,3 +39,11 @@ msgstr ""
 msgctxt "#30103"
 msgid "ago"
 msgstr ""
+
+msgctxt "#30104"
+msgid "Tagesschau 20:00"
+msgstr ""
+
+msgctxt "#30105"
+msgid "Tagesthemen"
+msgstr ""

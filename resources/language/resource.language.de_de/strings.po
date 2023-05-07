@@ -39,3 +39,11 @@ msgstr "Livestream"
 msgctxt "#30103"
 msgid "ago"
 msgstr "Vor"
+
+msgctxt "#30104"
+msgid "Tagesschau 20:00"
+msgstr "Tagesschau 20 Uhr"
+
+msgctxt "#30105"
+msgid "Tagesthemen"
+msgstr "Tagesthemen"

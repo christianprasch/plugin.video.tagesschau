@@ -20,7 +20,8 @@ try: import json
 except ImportError: import simplejson as json
 import logging, datetime, re, urllib.request, xbmc, xbmcaddon
 #import web_pdb
-
+#web_pdb.set_trace()
+ 
 # -- Constants ----------------------------------------------
 ADDON_ID = 'plugin.video.tagesschau'
 
@@ -56,6 +57,12 @@ class VideoContent(object):
         self.duration = duration
         # description of content
         self.description = description
+
+    def __eq__(self, other):
+        return self.timestamp == other.timestamp
+
+    def __lt__(self, other):
+        return self.timestamp > other.timestamp
 
     def video_id(self):
         return self.tsid
@@ -144,10 +151,11 @@ class VideoContentParser(object):
             
         return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
 
-    def parse_broadcast(self, jsonbroadcast ):
-        """Parses the broadcast JSON into a LazyVideoContent object."""
+    def parse_broadcast(self, jsonbroadcast, title="" ):
+        """Parses the video JSON into a VideoContent object."""
         tsid = jsonbroadcast["sophoraId"]
-        title = jsonbroadcast["title"]
+        if( title == "" ):
+            title = jsonbroadcast["title"]
         timestamp = self._parse_date(jsonbroadcast["date"])
         if(timestamp):
             title = title + timestamp.strftime(' vom %d.%m.%Y  %H:%M')
@@ -159,7 +167,7 @@ class VideoContentParser(object):
         return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
 
     def parse_livestream(self, jsonlivestream):
-        """Parses the livestream JSON into a VideoContent object."""
+        """Parses the video JSON into a VideoContent object."""
         tsid = "livestream"
         title = "Livestream"
         timestamp = None
@@ -249,6 +257,43 @@ class VideoContentProvider(object):
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
 
+    def tagesschau_20(self):
+        """Retrieves tagesschau 20:00 videos
+
+            Returns:
+                A list of VideoContent items.
+        """
+        self._logger.info("retrieving tagesschau 20:00")
+        videos = []
+        data = self._jsonsource.tagesschau_20()
+        for jsonvideo in data["searchResults"]:
+            if( jsonvideo["type"] == "video" ):
+                length = int(jsonvideo["tracking"][1]["length"])
+                if( (length >= 890) and (length <= 910) ):
+                    video = self._parser.parse_broadcast(jsonvideo, "Tagesschau")
+                    videos.append(video)
+
+        self._logger.info("found " + str(len(videos)) + " videos")
+        return videos
+
+    def tagesthemen(self):
+        """Retrieves tagesthemen videos
+
+            Returns:
+                A list of VideoContent items.
+        """
+        self._logger.info("retrieving tagesthemen")
+        videos = []
+        data = self._jsonsource.tagesthemen()
+        for jsonvideo in data["searchResults"]:
+            #web_pdb.set_trace()
+            if( jsonvideo["type"] == "video" ):
+                video = self._parser.parse_broadcast(jsonvideo)
+                videos.append(video)
+
+        self._logger.info("found " + str(len(videos)) + " videos")
+        return videos
+
 
 class JsonSource(object):
     """Provides access to the raw objects parsed from the TS JSON API.
@@ -267,4 +312,14 @@ class JsonSource(object):
     def latest_broadcasts(self):
         """Returns the parsed JSON structure for the latest broadcasts."""
         handle = urllib.request.urlopen(base_url + "channels")
+        return json.loads(handle.read())
+
+    def tagesschau_20(self):
+        """Returns the parsed JSON structure for 20:00 tagesschau"""
+        handle = urllib.request.urlopen(base_url + "search/?searchText=Tagesschau+20+Uhr")
+        return json.loads(handle.read())
+
+    def tagesthemen(self):
+        """Returns the parsed JSON structure for tagesthemen"""
+        handle = urllib.request.urlopen(base_url + "search/?searchText=tagesthemen")
         return json.loads(handle.read())
