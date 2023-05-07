@@ -82,9 +82,9 @@ def getListItem(videocontent):
               )
     if( videocontent.timestamp ):
         li.setInfo(type="Video", 
-                   infoLabels={ "premiered": str(videocontent.timestamp.strftime('%d.%m.%Y  %H:%M')),
-                                "aired": str(videocontent.timestamp.strftime('%d.%m.%Y  %H:%M')),
-                                "date": str(videocontent.timestamp.strftime('%d.%m.%Y  %H:%M')) 
+                   infoLabels={ "premiered": str(videocontent.timestamp.strftime('%d.%m.%Y')),
+                                "aired": str(videocontent.timestamp.strftime('%d.%m.%Y')),
+                                "date": str(videocontent.timestamp.strftime('%d.%m.%Y')) 
                               }
                   )
 
