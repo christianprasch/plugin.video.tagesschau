@@ -30,6 +30,7 @@ base_url = "https://www.tagesschau.de/api2u/"
 
 addon = xbmcaddon.Addon(id=ADDON_ID)
 showage = addon.getSettingBool('ShowAge')
+tt_listopt = addon.getSetting('tt_list')
 
 class VideoContent(object):
     """Represents a single video or broadcast.
@@ -286,9 +287,17 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.tagesthemen()
         for jsonvideo in data["searchResults"]:
-            #web_pdb.set_trace()
             if( jsonvideo["type"] == "video" ):
+                length = int(jsonvideo["tracking"][1]["length"])
                 video = self._parser.parse_broadcast(jsonvideo)
+
+                if( tt_listopt == "0" ):
+                    if( length >= 1100 ):
+                        videos.append(video)
+                elif( tt_listopt == "1" ):
+                    if( length < 1100 ):
+                        videos.append(video)
+                else:
                 videos.append(video)
 
         self._logger.info("found " + str(len(videos)) + " videos")
