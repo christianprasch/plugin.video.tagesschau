@@ -21,7 +21,7 @@ except ImportError: import simplejson as json
 import logging, datetime, re, urllib.request, xbmc, xbmcaddon
 #import web_pdb
 #web_pdb.set_trace()
- 
+
 # -- Constants ----------------------------------------------
 ADDON_ID = 'plugin.video.tagesschau'
 
@@ -86,7 +86,7 @@ class VideoContent(object):
             raise ValueError("quality must be one of 'S', 'M', 'L', 'X'")
 
         videourl = None
-        
+
         if quality == 'X':
             videourl = self._videourls.get("h264xl")
         if quality == 'L' or not videourl:
@@ -99,7 +99,7 @@ class VideoContent(object):
         #nothing found if it is a livestream
         if videourl == None:
             videourl = self._videourls.get("adaptivestreaming")
-            
+
         return videourl
 
     def image_url(self):
@@ -130,13 +130,13 @@ class VideoContentParser(object):
         imageurls = self._parse_image_urls(jsonvideo["teaserImage"]["imageVariants"])
         videourls = self.parse_video_urls(jsonvideo["streams"])
         duration = int(jsonvideo["tracking"][1]["length"])
-        
+
         age = datetime.datetime.now() - timestamp
         if age.seconds > 3600:
             agestr = str(age.seconds//3600) + "h " + str(age.seconds // 60 % 60) +"min"
         else:
             agestr = str(age.seconds // 60 % 60) +"min"
-        
+
         agostr = addon.getLocalizedString(30103)
         if agostr == "ago":
             agostr = agestr + " " + agostr
@@ -144,12 +144,12 @@ class VideoContentParser(object):
             agostr = agostr + " " + agestr
 
         if showage:
-            title = agostr + ": " + jsonvideo["title"]    
+            title = agostr + ": " + jsonvideo["title"]
         else:
-            title = jsonvideo["title"]    
-        
-        description = agostr + "\n" + jsonvideo["title"]    
-            
+            title = jsonvideo["title"]
+
+        description = agostr + "\n" + jsonvideo["title"]
+
         return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
 
     def parse_broadcast(self, jsonbroadcast, title="" ):
@@ -251,7 +251,7 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.latest_broadcasts()
         for jsonbroadcast in data["channels"]:
-            if( "date" in jsonbroadcast ):  # Filter out livestream which has no date
+            if( ("date" in jsonbroadcast) and ("title" in jsonbroadcast) ):  # Filter out livestream which has no date
                 video = self._parser.parse_broadcast(jsonbroadcast)
                 videos.append(video)
 
