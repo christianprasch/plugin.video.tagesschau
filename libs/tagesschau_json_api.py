@@ -298,7 +298,7 @@ class VideoContentProvider(object):
                     if( length < 1100 ):
                         videos.append(video)
                 else:
-                videos.append(video)
+                    videos.append(video)
 
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
