@@ -234,9 +234,12 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.latest_videos()
         for jsonvideo in data["news"]:
-            if( (jsonvideo["type"] == "video") and (jsonvideo["tracking"][0]["src"] == "ard-aktuell") ):
-                video = self._parser.parse_video(jsonvideo)
-                videos.append(video)
+            try:
+                if( (jsonvideo["type"] == "video") and (jsonvideo["tracking"][0]["src"] == "ard-aktuell") ):
+                    video = self._parser.parse_video(jsonvideo)
+                    videos.append(video)
+            except:
+                self._logger.info("ignoring")
 
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
@@ -251,9 +254,12 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.latest_broadcasts()
         for jsonbroadcast in data["channels"]:
-            if( ("date" in jsonbroadcast) and ("title" in jsonbroadcast) ):  # Filter out livestream which has no date
-                video = self._parser.parse_broadcast(jsonbroadcast)
-                videos.append(video)
+            try:
+                if( ("date" in jsonbroadcast) and ("title" in jsonbroadcast) ):  # Filter out livestream which has no date
+                    video = self._parser.parse_broadcast(jsonbroadcast)
+                    videos.append(video)
+            except:
+                self._logger.info("ignoring")
 
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
@@ -268,11 +274,14 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.tagesschau_20()
         for jsonvideo in data["searchResults"]:
-            if( jsonvideo["type"] == "video" ):
-                length = int(jsonvideo["tracking"][1]["length"])
-                if( (length >= 890) and (length <= 910) ):
-                    video = self._parser.parse_broadcast(jsonvideo, "Tagesschau")
-                    videos.append(video)
+            try:
+                if( jsonvideo["type"] == "video" ):
+                    length = int(jsonvideo["tracking"][1]["length"])
+                    if( (length >= 890) and (length <= 910) ):
+                        video = self._parser.parse_broadcast(jsonvideo, "Tagesschau")
+                        videos.append(video)
+            except:
+                self._logger.info("ignoring")
 
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
@@ -287,18 +296,21 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.tagesthemen()
         for jsonvideo in data["searchResults"]:
-            if( jsonvideo["type"] == "video" ):
-                length = int(jsonvideo["tracking"][1]["length"])
-                video = self._parser.parse_broadcast(jsonvideo)
+            try:
+                if( jsonvideo["type"] == "video" ):
+                    length = int(jsonvideo["tracking"][1]["length"])
+                    video = self._parser.parse_broadcast(jsonvideo)
 
-                if( tt_listopt == "0" ):
-                    if( length >= 1100 ):
+                    if( tt_listopt == "0" ):
+                        if( length >= 1100 ):
+                            videos.append(video)
+                    elif( tt_listopt == "1" ):
+                        if( length < 1100 ):
+                            videos.append(video)
+                    else:
                         videos.append(video)
-                elif( tt_listopt == "1" ):
-                    if( length < 1100 ):
-                        videos.append(video)
-                else:
-                    videos.append(video)
+            except:
+                self._logger.info("ignoring")
 
         self._logger.info("found " + str(len(videos)) + " videos")
         return videos
