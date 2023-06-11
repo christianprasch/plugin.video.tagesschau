@@ -31,6 +31,10 @@
       <screenshot>resources/assets/screenshot_3.png</screenshot>
     </assets>
     <news>
+version 2.5.3 (2023-05-24)
+ * Bugfixes
+ * Added setting for the tagesthemen listing: show broadcasts, topics or both
+
 version 2.5.0 (2023-05-07)
  * Added listing vor tagesschau 20:00 broadcasts
  * Added listing vor tagesthemen broadcasts
