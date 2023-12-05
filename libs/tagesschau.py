@@ -39,6 +39,7 @@ logger = logging.getLogger("plugin.video.tagesschau.api")
 # -- Settings -----------------------------------------------
 quality_id = addon.getSetting('quality')
 quality = ['M', 'L', 'X'][int(quality_id)]
+show_fanart = addon.getSettingBool('show_fanart')
 
 # -- I18n ---------------------------------------------------
 language = addon.getLocalizedString
@@ -71,9 +72,12 @@ def getListItem(videocontent):
     image_url = videocontent.image_url()
     if(not image_url):
         image_url = DEFAULT_IMAGE_URL
+    fanart_url = videocontent.fanart_url()
+    if((not fanart_url) or (not show_fanart)):
+        fanart_url = FANART
     li = xbmcgui.ListItem(title)
     li.setArt({'thumb':image_url, 'landscape':image_url})
-    li.setProperty('Fanart_Image', FANART)
+    li.setProperty('Fanart_Image', fanart_url)
     li.setProperty('IsPlayable', 'true')
     li.setInfo(type="video",
                infoLabels={ "Title": str(title),
