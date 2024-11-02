@@ -225,7 +225,8 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.livestreams()
         for jsonstream in data["channels"]:
-            if( not "date" in jsonstream ): # livestream has no date
+            #if( not "date" in jsonstream ): # livestream has no date
+            if( ("Livestream" in jsonstream["title"]) and ("tagesschau" in jsonstream["title"]) ):
                 video = self._parser.parse_livestream(jsonstream)
                 videos.append(video)
 
