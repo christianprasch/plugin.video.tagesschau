@@ -176,13 +176,23 @@ class VideoContentParser(object):
 
     def parse_livestream(self, jsonlivestream):
         """Parses the video JSON into a VideoContent object."""
-        tsid = "livestream"
-        title = "Livestream"
-        timestamp = None
+        tsid = jsonlivestream["sophoraId"]
+        title = jsonlivestream["title"]
+
+        if( "date" in jsonlivestream ): 
+            timestamp = self._parse_date(jsonlivestream["date"])
+        else:
+            timestamp = datetime.datetime.now()
+            
+        if( title.lower() == "tagesschau" ):
+            title = title + timestamp.strftime(' vom %d.%m.%Y  %H:%M')
+            
         imageurls = {}
         imageurls = self._parse_image_urls(jsonlivestream["teaserImage"]["imageVariants"])
         videourls = self.parse_video_urls(jsonlivestream["streams"])
-        return VideoContent(tsid, title, timestamp, videourls, imageurls)
+        duration = int(jsonlivestream["tracking"][1]["length"])
+        description = title
+        return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
 
     def parse_video_urls(self, jsonvariants):
         """Parses the video mediadata JSON into a dict mapping variant name to URL."""
@@ -225,11 +235,8 @@ class VideoContentProvider(object):
         videos = []
         data = self._jsonsource.livestreams()
         for jsonstream in data["channels"]:
-            #if( not "date" in jsonstream ): # livestream has no date
-            if( ("Livestream" in jsonstream["title"]) and ("tagesschau" in jsonstream["title"]) ):
-                video = self._parser.parse_livestream(jsonstream)
-                videos.append(video)
-
+            video = self._parser.parse_livestream(jsonstream)
+            videos.append(video)
         return videos
 
     def latest_videos(self):

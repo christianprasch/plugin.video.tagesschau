@@ -61,8 +61,8 @@ msgid "Broadcasts"
 msgstr "Sendungen"
 
 msgctxt "#30102"
-msgid "Livestream"
-msgstr "Livestream"
+msgid "Livestreams"
+msgstr "Livestreams"
 
 msgctxt "#30103"
 msgid "ago"

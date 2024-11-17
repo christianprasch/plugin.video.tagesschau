@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
     id="plugin.video.tagesschau"
-    version="2.5.8"
+    version="2.5.9"
     name="Tagesschau"
     provider-name="J.Schumacher, H.Saul, C.Prasch">
   <requires>
@@ -31,6 +31,9 @@
       <screenshot>resources/assets/screenshot_3.png</screenshot>
     </assets>
     <news>
+version 2.5.9 (2024-11-17)
+ * All livestreams (not only one) are now listed in the subfolder "Livestreams"
+ 
 version 2.5.8 (2024-11-02)
  * Detection of available livestream changed
  

@@ -173,21 +173,9 @@ def tagesschau():
         addVideoContentItems(videos, params[FEED_PARAM])
 
     else:
-        # populate root directory
-        # check whether there is a livestream
-        videos = provider.livestreams()
-        if(len(videos) == 1):
-            li = xbmcgui.ListItem(strings['livestreams'])
-            li.setArt({'thumb':ICON_IMG, 'landscape':LOGO_IMG, 'icon':ICON_IMG})
-            li.setProperty('Fanart_Image', FANART_IMG)
-            li.setProperty('IsPlayable', 'true')
-            li.setInfo(type="video", infoLabels={ "Title": strings['livestreams'], "Plot": strings['livestreams'] })
-            url = getUrl(videos[0], "livestreams")
-            xbmcplugin.setContent(int(sys.argv[1]), 'videos')
-            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, li, False)
-
         # add directories for other feeds
         add_named_directory = lambda x: addVideoContentDirectory(strings[x], x)
+        add_named_directory('livestreams')
         add_named_directory('latest_videos')
         add_named_directory('latest_broadcasts')
         add_named_directory('tagesschau_20')
