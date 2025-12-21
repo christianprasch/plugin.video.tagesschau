@@ -52,6 +52,14 @@ msgctxt "#30009"
 msgid "Show preview image also as fanart"
 msgstr ""
 
+msgctxt "#30010"
+msgid "General"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Number of elements for Tagesschau 20 Uhr"
+msgstr ""
+
 msgctxt "#30100"
 msgid "News"
 msgstr ""
