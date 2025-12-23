@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
     id="plugin.video.tagesschau"
-    version="2.6.0"
+    version="2.6.0+nexus"
     name="Tagesschau"
     provider-name="J.Schumacher, H.Saul, C.Prasch">
   <requires>
-    <import addon="xbmc.python" version="3.0.0"></import>
+    <import addon="xbmc.python" version="3.0.1"></import>
     <import addon="script.module.infotagger" version="0.0.3" />
   </requires>
   
@@ -55,33 +55,6 @@ version 2.5.5 (2023-12-05)
 version 2.5.4 (2023-12-03)
  * Fixed content types so that skins use landscape viewtype
  * Added setting to hide "Europadruck" and "Aktueller Wolkenfilm" from news list
-
-version 2.5.3 (2023-05-24)
- * Bugfixes
- * Added setting for the tagesthemen listing: show broadcasts, topics or both
-
-version 2.5.0 (2023-05-07)
- * Added listing vor tagesschau 20:00 broadcasts
- * Added listing vor tagesthemen broadcasts
-
-version 2.4.0 (2023-04-28)
- * Switched to Tagesschau API2 because API1 was disabled by ARD
- * New option to show age of news in title
-
-version 2.3.2 (2022-03-25)
- * Fixed HTTP redirect error: 308 (thanks to Josef Friedrich) 
-
-version 2.3.0
- * Update to Kodi 19 (Matrix)
-
-version 2.2.2
- * Fix unicode error (thanks to jgibbon)
-
-version 2.2.1
- * Fixed issue where subtitles did not work (thanks to Mikel)
-
-version 2.2.0
- * Added regular Tagesschau to "Latest Broadcasts"
     </news>
   </extension>
 </addon>
