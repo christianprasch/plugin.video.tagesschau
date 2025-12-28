@@ -18,18 +18,20 @@
 
 try: import json
 except ImportError: import simplejson as json
-import datetime, re, urllib.request, xbmc, xbmcaddon
+import re, urllib.request, xbmc, xbmcaddon, time
+from datetime import datetime
 #import web_pdb
 #web_pdb.set_trace()
 
 # -- Constants ----------------------------------------------
 ADDON_ID = 'plugin.video.tagesschau'
 base_url = "https://www.tagesschau.de/api2u/"
+base_url_json = "https://www.tagesschau.de/json/"
 
 addon = xbmcaddon.Addon(id=ADDON_ID)
 showage = addon.getSettingBool('ShowAge')
 tt_listopt = addon.getSetting('tt_list')
-ts20_count = int(addon.getSetting('ts20_count'))
+result_count = int(addon.getSetting('result_count'))
 hide_europadruck = addon.getSettingBool('hide_europadruck')
 hide_wolkenfilm = addon.getSettingBool('hide_wolkenfilm')
 
@@ -89,29 +91,42 @@ class VideoContent(object):
         videourl = None
 
         if quality == 'X':
-            videourl = self._videourls.get("h264xl")
+            if "h264xl" in self._videourls:
+                videourl = self._videourls.get("h264xl")
         if quality == 'L' or not videourl:
-            videourl = self._videourls.get("h264m")
+            if "h264m" in self._videourls:
+                videourl = self._videourls.get("h264m")
         if quality == 'M' or not videourl:
-            videourl = self._videourls.get("h264s")
+            if "h264s" in self._videourls:
+                videourl = self._videourls.get("h264s")
         if quality == 'S' or not videourl:
-            videourl = self._videourls.get("h264s")
+            if "h264s" in self._videourls:
+                videourl = self._videourls.get("h264s")
 
         #nothing found if it is a livestream
         if videourl == None:
-            videourl = self._videourls.get("adaptivestreaming")
+            if "adaptivestreaming" in self._videourls:
+                videourl = self._videourls.get("adaptivestreaming")
+            else:
+                videourl = self._videourls
 
         return videourl
 
     def image_url(self):
         """Returns the URL String of the image for this video."""
-        imageurl = self._imageurls.get("16x9-640")
+        if "16x9-640" in self._imageurls:
+            imageurl = self._imageurls.get("16x9-640")
+        elif "16x9-960" in self._imageurls:
+            imageurl = self._imageurls.get("16x9-960")
+        elif "16x9-512" in self._imageurls:
+            imageurl = self._imageurls.get("16x9-512")
+        else:
+            imageurl = self._imageurls
         return imageurl
 
     def fanart_url(self):
         """Returns the URL String of the highres image for this video."""
-        fanarturl = self._imageurls.get("16x9-1920")
-        return fanarturl
+        return self.image_url()
 
     def __str__(self):
         """Returns a String representation for development/testing."""
@@ -137,7 +152,7 @@ class VideoContentParser(object):
         videourls = self.parse_video_urls(jsonvideo["streams"])
         duration = int(jsonvideo["tracking"][1]["length"])
 
-        age = datetime.datetime.now() - timestamp
+        age = datetime.now() - timestamp
         if age.seconds > 3600:
             agestr = str(age.seconds//3600) + "h " + str(age.seconds // 60 % 60) +"min"
         else:
@@ -181,7 +196,7 @@ class VideoContentParser(object):
         if( "date" in jsonlivestream ): 
             timestamp = self._parse_date(jsonlivestream["date"])
         else:
-            timestamp = datetime.datetime.now()
+            timestamp = datetime.now()
             
         if( title.lower() == "tagesschau" ):
             title = title + timestamp.strftime(' vom %d.%m.%Y  %H:%M')
@@ -200,13 +215,38 @@ class VideoContentParser(object):
             variants[name] = url
         return variants
 
+    def parse_jsonurl_result(self, entry):
+        """Parses the search result of the json-url  into a VideoContent object."""
+        tsid = "0"
+        title = entry["headline"]
+
+        # workaround for strptime error in embedded python
+        try:
+            timestamp = datetime.strptime( entry["datetime"], "%d.%m.%Y • %H:%M")
+        except TypeError:
+            timestamp = datetime.fromtimestamp(time.mktime(time.strptime( entry["datetime"], "%d.%m.%Y • %H:%M" )))
+        
+        description = title
+        
+        # Get url of mp4 stream from HTML-page
+        page = urllib.request.urlopen("https://www.tagesschau.de" + entry["url"]).read()
+        found = re.search(b'<script type="application/ld\+json">(.*?"@type" : "VideoObject",.*?)</script>', page, flags=re.DOTALL)
+        data = json.loads( found[1] )
+        videourls = data["contentUrl"]
+        imageurls = data["image"][0]["url"]
+
+        found = re.search('PT(\d+)M(\d+)S', data["duration"])
+        duration = int(found[1]) * 60 + int(found[2])
+        
+        return VideoContent(tsid, title, timestamp, videourls, imageurls, duration, description)
+
     def _parse_date(self, isodate):
         """Parses the given date in iso format into a datetime."""
         if(not isodate):
             return None
         # ignore time zone part
         isodate = isodate[:-6]
-        return datetime.datetime(*list(map(int, re.split('[^\d]', isodate))))
+        return datetime(*list(map(int, re.split('[^\d]', isodate))))
 
     def _parse_image_urls(self, jsonvariants):
         """Parses the image variants JSON into a dict mapping variant name to URL."""
@@ -293,22 +333,16 @@ class VideoContentProvider(object):
                 A list of VideoContent items.
         """
         videos = []
-        
-        page = 0
-        while (len(videos) < ts20_count) and (page < 10):
-            url = base_url + "search/?searchText=Tagesschau+20+Uhr&pageSize=30&resultPage=" + str(page)
-            data = json.loads( urllib.request.urlopen(url).read() )
-            page += 1
-            
-            for jsonvideo in data["searchResults"]:
-                try:
-                    if( jsonvideo["type"] == "video" ):
-                        length = int(jsonvideo["tracking"][1]["length"])
-                        if( (length >= 890) and (length <= 910) ):
-                            video = self._parser.parse_broadcast(jsonvideo, "Tagesschau")
-                            videos.append(video)
-                except:
-                    pass
+
+        data = self.search_jsonurl("tagesschau%2020:00%20Uhr")
+        for entry in data["documentTypes"][0]["items"]:
+            if "description" in entry:
+                if entry["description"] == "tagesschau 20:00 Uhr":
+                    video = self._parser.parse_jsonurl_result(entry)
+                    videos.append(video)
+                    
+                    if len(videos) >= result_count:
+                        break
 
         return videos
 
@@ -342,3 +376,8 @@ class VideoContentProvider(object):
                     pass
 
         return videos
+
+    def search_jsonurl( self, searchstr, documentType = "video" ):
+        url = base_url_json + "/search/?searchText=" + searchstr + "&documentType=" + documentType
+        data = json.loads( urllib.request.urlopen(url).read() )
+        return data

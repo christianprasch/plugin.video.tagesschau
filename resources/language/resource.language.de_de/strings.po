@@ -57,7 +57,7 @@ msgid "General"
 msgstr "Allgemein"
 
 msgctxt "#30011"
-msgid "Number of elements for Tagesschau 20 Uhr"
+msgid "Number of shown elements for Tagesschau 20 Uhr"
 msgstr "Anzahl Einträge \"Tagesschau 20 Uhr\""
 
 msgctxt "#30100"
